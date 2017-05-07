@@ -1,6 +1,0 @@
-from src.DataDownloader import TickDownloader
-
-
-dwnldr = TickDownloader
-
-dwnldr.download_historical_data(pair, timeframe)
