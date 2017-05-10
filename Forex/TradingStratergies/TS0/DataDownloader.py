@@ -4,34 +4,50 @@ Created on 29 Apr 2017
 @author: Gayan
 '''
 import urllib
-from datetime import datetime
+import datetime
 from datetime import timedelta, date
-import pandas as pd
+import calendar
+import urllib
 
-
-download_site = 'http://ratedata.gaincapital.com'
+download_site = 'http://ratedata.gaincapital.com/'
+from requests import get
+from io import BytesIO
+from zipfile import ZipFile
+ 
+def download_unzip(url):
+	request = get(url)
+	zip_file = ZipFile(BytesIO(request.content))
+	files = zip_file.namelist()
+	print(files)
+def week_of_month(tgtdate):
+	days_this_month = calendar.mdays[tgtdate.month]
+	for i in range(1, days_this_month):
+		d = datetime.date(tgtdate.year, tgtdate.month, i)
+		if d.day - d.weekday() > 0:
+			startdate = d
+			break
+	return (tgtdate - startdate).days //7 + 1
 	
 def date_range(start_date, end_date):
 	for n in range(int ((end_date - start_date).days)):
 		yield start_date + timedelta(n)
 	
-def prepare_download_urls(from_date, to_date):
+def prepare_download_urls(pair, from_date, to_date):
+	urls = []
+	wmp = week_of_month(from_date)
+	if wmp != 0:
+		urls.append(download_site + from_date.strftime('%Y') + '/' + from_date.strftime('%m') + ' ' + from_date.strftime("%B") + '/' + pair + '_Week' + '{}'.format(wmp) + '.zip')
 	for single_date in date_range(from_date, to_date):
-		print(single_date.strftime("%Y-%m-%d"))
+		wm = week_of_month(single_date)
+		if wm != wmp and wm != 0:
+			wmp = wm
+			urls.append(download_site + single_date.strftime('%Y') + '/' + single_date.strftime('%m') + ' ' + single_date.strftime("%B") + '/' + pair + '_Week' + '{}'.format(wmp) + '.zip')
+	print (urls)
+	return urls		
 
 def download_historical_data(pair, from_date, to_date):
-	url = prepare_download_urls(from_date, to_date)
+	urls = prepare_download_urls(pair, from_date, to_date)
+	for url in urls:
+		download_unzip(url)
+		
 	
-def gain_parser(dt_str):
-	try:
-		return datetime.strptime(dt_str[:-3],'%Y-%m-%d %H:%M:%S.%f')
-	except Exception as e:
-		return datetime.strptime(dt_str,'%Y-%m-%d %H:%M:%S')
-	
-def parse_csv(filename):
-	df = pd.read_csv(filename, parse_dates=['DateTime'], index_col='DateTime', names=['Tid', 'Dealable', 'Pair', 'DateTime', 'Buy', 'Sell'], date_parser=gain_parser)
-	del df['Tid'] 
-	del df['Dealable']
-	del df['Pair']
-	grouped_data = df.resample('15Min', how='ohlc')
-	grouped_data.to_pickle(filename+'-OHLC.pkl')
