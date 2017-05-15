@@ -8,17 +8,20 @@ import datetime
 from datetime import timedelta, date
 import calendar
 import urllib
+import re
 
 download_site = 'http://ratedata.gaincapital.com/'
 from requests import get
 from io import BytesIO
 from zipfile import ZipFile
  
-def download_unzip(url):
+def download_unzip(url, path):
 	request = get(url)
 	zip_file = ZipFile(BytesIO(request.content))
+	#zip_file.extractall(
 	files = zip_file.namelist()
 	print(files)
+	
 def week_of_month(tgtdate):
 	days_this_month = calendar.mdays[tgtdate.month]
 	for i in range(1, days_this_month):
@@ -48,6 +51,9 @@ def prepare_download_urls(pair, from_date, to_date):
 def download_historical_data(pair, from_date, to_date):
 	urls = prepare_download_urls(pair, from_date, to_date)
 	for url in urls:
-		download_unzip(url)
+		ids = url.split('/')
+		print(ids)
+		path = ids[3] + '_' + re.sub(r'\D', '',ids[4]) + '_' +  ids[5].translate(None, '.zip')
+		download_unzip(url, path)
 		
 	

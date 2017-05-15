@@ -51,5 +51,5 @@ def read_sampled_files():
 				print data.tail()
 				
 
-get_csv_files_and_resample()		
-read_sampled_files()
+#get_csv_files_and_resample()		
+#read_sampled_files()
