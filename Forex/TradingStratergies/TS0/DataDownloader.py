@@ -9,6 +9,8 @@ from datetime import timedelta, date
 import calendar
 import urllib
 import re
+import os
+from test_data import get_csv_files_and_resample
 
 download_site = 'http://ratedata.gaincapital.com/'
 from requests import get
@@ -17,11 +19,19 @@ from zipfile import ZipFile
  
 def download_unzip(url, path):
 	request = get(url)
+	if request.status_code != 200:
+		print "Zip file get error"
+		return
 	zip_file = ZipFile(BytesIO(request.content))
-	#zip_file.extractall(
+	print "Extracting files"
 	files = zip_file.namelist()
-	print(files)
-	
+	print(files)	
+	try:
+		zip_file.extractall(path)
+	except Exception as e:	
+		print "Zip file extract error"
+		return
+		
 def week_of_month(tgtdate):
 	days_this_month = calendar.mdays[tgtdate.month]
 	for i in range(1, days_this_month):
@@ -45,15 +55,16 @@ def prepare_download_urls(pair, from_date, to_date):
 		if wm != wmp and wm != 0:
 			wmp = wm
 			urls.append(download_site + single_date.strftime('%Y') + '/' + single_date.strftime('%m') + ' ' + single_date.strftime("%B") + '/' + pair + '_Week' + '{}'.format(wmp) + '.zip')
-	print (urls)
 	return urls		
 
 def download_historical_data(pair, from_date, to_date):
 	urls = prepare_download_urls(pair, from_date, to_date)
 	for url in urls:
 		ids = url.split('/')
-		print(ids)
-		path = ids[3] + '_' + re.sub(r'\D', '',ids[4]) + '_' +  ids[5].translate(None, '.zip')
-		download_unzip(url, path)
+		path = './Data/' + ids[3] + '_' + re.sub(r'\D', '',ids[4]) + '_' +  ids[5].translate(None, '.zip')
+		if not os.path.isdir(path):
+			print("Downloading  url :{} to :{}".format(url,path))
+			download_unzip(url, path)
+			get_csv_files_and_resample()
 		
 	

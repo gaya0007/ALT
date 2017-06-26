@@ -3,9 +3,8 @@ import pandas as pd
 from datetime import datetime
 import os 
 import pickle
-import calander 
 # define a parser, for the more recent timestamp
-
+sample_periods = ['15Min', '1H', '4H', '1D']
 def gain_parser(dt_str):
 	try:
 		return datetime.strptime(dt_str[:-3],'%Y-%m-%d %H:%M:%S.%f')
@@ -20,8 +19,9 @@ def read_resample_save(dir):
 			del eu['lTid'] 
 			del eu['cDealable']
 			del eu['CurrencyPair']
-			grouped_data = eu.resample('15Min').ohlc()
-			grouped_data.to_pickle(filename +'-OHLC.pkl')
+			for per in sample_periods:
+				grouped_data = eu.resample(per).ohlc()
+				grouped_data.to_pickle(filename +'-' + per + '_OHLC.pkl')		
 			os.remove(filename)
 		
 def get_csv_files_and_resample():
