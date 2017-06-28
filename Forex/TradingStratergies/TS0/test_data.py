@@ -19,6 +19,7 @@ def read_resample_save(dir):
 			del eu['lTid'] 
 			del eu['cDealable']
 			del eu['CurrencyPair']
+			grouped_data = eu.dropna()
 			for per in sample_periods:
 				grouped_data = eu.resample(per).ohlc()
 				grouped_data.to_pickle(filename +'-' + per + '_OHLC.pkl')		
@@ -35,9 +36,8 @@ def get_pkl_files(dir):
 	for file in os.listdir(dir):
 		if file.endswith('.pkl'):
 			file_list.append(file)
-			print(file)
 	return 	file_list
-
+	
 def read_sampled_files():
 	for dir_name in os.listdir('./Data'):
 		if os.path.isdir(os.path.join('./Data/', dir_name)):
@@ -45,10 +45,10 @@ def read_sampled_files():
 			pkl_files = get_pkl_files(dir_name)
 			for file in pkl_files:
 				with open(dir_name + file, 'rb') as f:
-					data = pickle.load(f)	
+					data = pickle.load(f)
 				print "from file {}{}".format(dir_name,file)	
-				print data.head()
-				print data.tail()
+				print data['RateBid'].head()
+				print data['RateBid'].tail()
 				
 
 #get_csv_files_and_resample()		
