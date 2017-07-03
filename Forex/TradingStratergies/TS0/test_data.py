@@ -20,9 +20,8 @@ def read_resample_save(dir):
 			del eu['cDealable']
 			del eu['CurrencyPair']
 			grouped_data = eu.dropna()
-			for per in sample_periods:
-				grouped_data = eu.resample(per).ohlc()
-				grouped_data.to_pickle(filename +'-' + per + '_OHLC.pkl')		
+			grouped_data = eu.resample('1Min').ohlc()
+			grouped_data.to_pickle(filename +'-' + '1Min' + '_OHLC.pkl')		
 			os.remove(filename)
 		
 def get_csv_files_and_resample():
