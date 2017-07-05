@@ -8,14 +8,14 @@
   
   <body>
 
-    <div id="container" style="width:100%; height:400px;"></div>
+    <div id="container" style="width:200%; height:400px;"></div>
     <script type="text/javascript">
 
       $(document).ready(function() {
 
-      $.getJSON("http://0.0.0.0:8000/ticks.json", function (data) {
+      $.getJSON("http://127.0.0.1:8000/ticks.json", function (data) {
 
-      $.getJSON("http://0.0.0.0:8000/ml_results.json", function (ml_data) {
+      $.getJSON("http://127.0.0.1:8000/ml_results.json", function (ml_data) {
       
         
         var processedData = [];
@@ -61,7 +61,7 @@
                 name : 'GOOG Stock Price',
                 data : processedData,
                 tooltip: {
-                    valueDecimals: 2
+                    valueDecimals: 5
                 }
             }]
       });
