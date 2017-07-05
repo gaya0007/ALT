@@ -7,6 +7,7 @@ import matplotlib.dates as mdates
 from matplotlib import style
 import pandas as pd
 import os
+from analysis_funcs import*
 
 style.use('ggplot')
 
@@ -44,8 +45,9 @@ def	plot_ohlc(df):
 
 def main():
 	download_data_and_resample('EUR_USD', datetime.date(2017,1,1), datetime.date(2017,6,25))
-	#df = create_dataframe("EUR_USD", "1D", datetime.date(2017,1,1), datetime.date(2017,6,25))
+	df = create_dataframe("EUR_USD", "1D", datetime.date(2017,1,1), datetime.date(2017,6,25))
 	#plot_ohlc(df['RateBid'])
+	get_support_and_resistance(df, "1D")
 	
 if __name__ == '__main__':
 		main()
