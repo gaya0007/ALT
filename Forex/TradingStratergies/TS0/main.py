@@ -44,8 +44,8 @@ def	plot_ohlc(df):
 
 
 def main():
-	download_data_and_resample('EUR_USD', datetime.date(2017,6,1), datetime.date(2017,6,25))
-	df = create_dataframe("EUR_USD", "1D", datetime.date(2017,6,1), datetime.date(2017,6,25))
+	download_data_and_resample('EUR_USD', datetime.date(2017,3,1), datetime.date(2017,6,25))
+	df = create_dataframe("EUR_USD", "1D", datetime.date(2017,3,1), datetime.date(2017,6,25))
 	#plot_ohlc(df['RateBid'])
 	get_support_and_resistance(df, "1D")
 	

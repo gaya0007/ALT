@@ -8,7 +8,7 @@ def get_support_and_resistance(df, period):
 	# group by day and drop NA values (usually weekends)
 	grouped_data = df.dropna()
 
-	ticks_data = grouped_data['RateBid'].resample(period).dropna()
+	ticks_data = grouped_data['RateBid'].resample(period).agg({'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last'}).dropna()
 
 	# use 'ask'
 	sell_data = pd.DataFrame(grouped_data.values)
